@@ -1,0 +1,24 @@
+import { PrismaClient } from "@prisma/client";
+import express from "express";
+import bodyParser from "body-parser";
+import userSignup from "./User/userSignup.js";
+import userLogin from "./User/userLogin.js";
+import userAccess from "./User/userAccess.js";
+import userRefresh from "./User/userRefresh.js";
+import conductorLogin from "./Conductor/conductorLogin.js";
+import conductorAccess from "./Conductor/conductorAccess.js";
+import conductorRefresh from "./Conductor/conductorRefersh.js";
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+const prisma = new PrismaClient();
+app.use(userSignup);
+app.use(userLogin);
+app.use(userAccess);
+app.use(userRefresh);
+app.use(conductorLogin);
+app.use(conductorAccess);
+app.use(conductorRefresh);
+app.listen(3000, () => {
+  console.log("server has started at port 3000");
+});
+export default prisma;
