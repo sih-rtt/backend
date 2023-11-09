@@ -4,7 +4,7 @@ import { conductorRepositiory } from "../../User.js";
 import "dotenv/config.js";
 var conductorRefresh = express.Router();
 conductorRefresh.post("/conductor/refresh", async (req, res) => {
-  const refreshToken = await req.body.refreshToken;
+  const refreshToken = req.headers.authorization.slice(7);
   const conductorId = await req.body.conductorId;
   try {
     const conductorIdVer = await jwt.verify(
