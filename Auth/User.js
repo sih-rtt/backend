@@ -17,6 +17,7 @@ const riderSchema = new Schema("rider", {
 });
 const conductorSchema = new Schema("conductor", {
   conductorid: { type: "string" },
+  loggedIn: { type: "boolean" },
   access: { type: "string" },
   refresh: { type: "string" },
 });
