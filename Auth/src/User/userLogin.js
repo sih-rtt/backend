@@ -14,26 +14,31 @@ userLogin.post("/user/login", async (req, res) => {
   });
   if (rider != null) {
     if (rider.password == password) {
-      const accessKey = jwt.sign({ email: email }, process.env.ACCESS_SECRET, {
+      let accessKey = jwt.sign({ email: email }, process.env.ACCESS_SECRET, {
         expiresIn: "20m",
       });
-      const refreshKey = jwt.sign(
-        { email: email },
-        process.env.REFRESH_SECRET,
-        { expiresIn: "1d" }
-      );
+      let refreshKey = jwt.sign({ email: email }, process.env.REFRESH_SECRET, {
+        expiresIn: "1d",
+      });
       const response = {
         access: accessKey,
         refresh: refreshKey,
       };
+      const data = await riderRepositiory.fetch(email);
+      if (!data.accessTokens) {
+        accessKey = [accessKey];
+        refreshKey = [refreshKey];
+      } else {
+        data.accessTokens[data.accessTokens.length] = accessKey;
+        accessKey = data.accessTokens;
+        data.refreshTokens[data.refreshTokens.length] = refreshKey;
+        refreshKey = data.refreshTokens;
+      }
       let redisData = {
         email: email,
-        access: accessKey,
-        refresh: refreshKey,
+        accessTokens: accessKey,
+        refreshTokens: refreshKey,
       };
-      if (riderRepositiory.fetch(email)) {
-        riderRepositiory.remove(email);
-      }
       redisData = await riderRepositiory.save(email, redisData);
       res.json(response);
     } else {
