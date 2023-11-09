@@ -20,7 +20,6 @@ userAccess.post("/user/access", async (req, res) => {
 
     if (email == emailVer) {
       const accessTokenVer = await riderRepositiory.fetch(email);
-      console.log(accessTokenVer.accessTokens);
       if (incudedInObj(accessTokenVer.accessTokens, accessToken)) {
         res.send(JSON.stringify("Authorized"));
       } else {
