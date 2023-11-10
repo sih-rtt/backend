@@ -4,6 +4,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
+  binaryTargets   = ["native", "darwin-arm64"]
 }
 
 // Defines DB connections
@@ -19,7 +20,7 @@ model Conductor {
   password    String
   fullName    String
   gender      String
-  phoneNumber String    @db.VarChar(10)
+  phoneNumber String
   address     Json?     @db.Json
   sessions    Session[]
 }
@@ -42,24 +43,22 @@ model Session {
 }
 
 model Bus {
-  id       String    @id @default(cuid())
-  regNo    String    @unique
+  id       String        @id @default(cuid())
+  regNo    String        @unique
   busStops BusStop[]
   sessions Session[]
   busNo    String
-  routeIdA Int
-  routeA   Route     @relation(fields: [routeIdA], references: [refId], name: "routeA")
-  routeIdB Int
-  routeB   Route     @relation(fields: [routeIdB], references: [refId], name: "routeB")
+  routeId  String
+  route    CombinedRoute @relation(fields: [routeId], references: [id])
   type     String
-  info     Json      @db.Json
+  info     Json          @db.Json
 }
 
 model BusStop {
   id       String                               @id @default(cuid())
-  refId    Int                                  @unique
+  refId    BigInt                               @unique
   location Unsupported("geometry(POINT, 4326)")
-  name     String                               @db.VarChar(30)
+  name     String
   buses    Bus[]
   routes   BusStopsInRoute[]
 
@@ -94,21 +93,32 @@ model User {
 
 model Route {
   id            String            @id @default(cuid())
-  refId         Int               @unique
-  from          String
-  to            String
+  refId         BigInt            @unique
+  from          String?
+  to            String?
   busStops      BusStopsInRoute[]
-  busesOnTouteA Bus[]             @relation(name: "routeA")
-  busesOnRouteB Bus[]             @relation(name: "routeB")
+  busesOnTouteA CombinedRoute[]   @relation(name: "routeA")
+  busesOnRouteB CombinedRoute[]   @relation(name: "routeB")
+
+  @@index(fields: [id], type: BTree)
+}
+
+model CombinedRoute {
+  id       String  @id @default(cuid())
+  busRef   String  @unique
+  routeIdA BigInt
+  routeA   Route   @relation(fields: [routeIdA], references: [refId], name: "routeA")
+  routeIdB BigInt?
+  routeB   Route?  @relation(fields: [routeIdB], references: [refId], name: "routeB")
+  bus      Bus[]
 
   @@index(fields: [id], type: BTree)
 }
 
 model BusStopsInRoute {
-  busStopRefId Int
+  id String @id @default(cuid())
+  busStopRefId BigInt
   busStop      BusStop @relation(fields: [busStopRefId], references: [refId])
-  routeRefId   Int
+  routeRefId   BigInt
   route        Route   @relation(fields: [routeRefId], references: [refId])
-
-  @@id([busStopRefId, routeRefId])
 }

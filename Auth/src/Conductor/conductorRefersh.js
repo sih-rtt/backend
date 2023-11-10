@@ -30,6 +30,7 @@ conductorRefresh.post("/conductor/refresh", async (req, res) => {
         };
         let redisData = {
           conductorId: conductorId,
+          loggedIn: true,
           access: accesskey,
           refresh: refreshKey,
         };
