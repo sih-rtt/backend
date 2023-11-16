@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { conductorRepositiory } from "../../User.js";
 import "dotenv/config.js";
+
 var conductorRefresh = express.Router();
 conductorRefresh.post("/conductor/refresh", async (req, res) => {
   const refreshToken = req.headers.authorization.slice(7);
@@ -49,4 +50,5 @@ conductorRefresh.post("/conductor/refresh", async (req, res) => {
     res.status(402).send(error.message);
   }
 });
+
 export default conductorRefresh;

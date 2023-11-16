@@ -2,11 +2,12 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { conductorRepositiory } from "../../User.js";
 import prisma from "../index.js";
+
 var conductorLogin = express.Router();
 conductorLogin.post("/conductor/login", async (req, res) => {
   const conductorId = await req.body.conductorId;
   const password = await req.body.password;
-  const conductor = await prisma.conductor.findFirst({
+  const conductor = await prisma.conductor.findUnique({
     where: {
       conductorId: conductorId,
     },
@@ -20,7 +21,6 @@ conductorLogin.post("/conductor/login", async (req, res) => {
             .status(403)
             .send("Only one session allowed log out from that session");
         } else {
-          console.log("sada");
           const accesskey = jwt.sign(
             { conductorId: conductorId },
             process.env.ACCESS_SECRET,
@@ -52,4 +52,5 @@ conductorLogin.post("/conductor/login", async (req, res) => {
     res.status(403).send("Email or password is wrong");
   }
 });
+
 export default conductorLogin;

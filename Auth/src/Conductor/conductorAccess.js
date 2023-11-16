@@ -2,9 +2,10 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { conductorRepositiory } from "../../User.js";
 import "dotenv/config.js";
+
 var conductorAccess = express.Router();
 conductorAccess.post("/conductor/access", async (req, res) => {
-  const accessToken = await req.body.accessToken;
+  const accessToken = req.headers.authorization.slice(7);
   const conductorId = await req.body.conductorId;
   try {
     const conductorIdVer = await jwt.verify(
@@ -25,4 +26,5 @@ conductorAccess.post("/conductor/access", async (req, res) => {
     res.status(401).send(error.message);
   }
 });
+
 export default conductorAccess;

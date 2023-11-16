@@ -3,11 +3,12 @@ import prisma from "../index.js";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { riderRepositiory } from "../../User.js";
+
 var userLogin = express.Router();
 userLogin.post("/user/login", async (req, res) => {
   const email = await req.body.email;
   const password = await req.body.password;
-  const rider = await prisma.user.findFirst({
+  const rider = await prisma.user.findUnique({
     where: {
       email: email,
     },
@@ -48,4 +49,5 @@ userLogin.post("/user/login", async (req, res) => {
     res.status(403).send("Email or password is wrong");
   }
 });
+
 export default userLogin;

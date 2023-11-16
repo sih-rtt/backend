@@ -3,17 +3,10 @@ import prisma from "./../index.js";
 var userSignup = express.Router();
 
 userSignup.post("/user/signup", async (req, res) => {
-  const address =
-    req.body.address == "" || req.body.address == " "
-      ? null
-      : JSON.parse(req.body.address);
   const data = {
     email: req.body.email,
     password: req.body.password,
-    fullName: req.body.fullName,
-    gender: req.body.gender,
-    phoneNumber: req.body.phoneNumber,
-    address: address,
+    fullName: req.body.fullName
   };
 
   if (
@@ -22,8 +15,8 @@ userSignup.post("/user/signup", async (req, res) => {
     res.status(422).send("Phone number provided is in wrong fromat");
   } else if (req.body.fullName.length == 0) {
     res.status(422).send("Full name cannot be Empty");
-  } else if (req.body.password.length == 0) {
-    res.status(422).send("password cannot be Empty");
+  } else if (req.body.password.length < 8) {
+    res.status(422).send("Password cannot be less than 8 characters.");
   } else {
     var user;
     try {

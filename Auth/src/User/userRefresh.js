@@ -20,8 +20,8 @@ userRefresh.post("/user/refresh", async (req, res) => {
     if (email == emailVer) {
       const refreshTokenVer = await riderRepositiory.fetch(email);
       let condition = incudedInObj(refreshTokenVer.refreshTokens, refreshToken);
-      condition = condition - 1;
       if (condition) {
+        condition = condition - 1;
         let accesskey = jwt.sign({ email: email }, process.env.ACCESS_SECRET, {
           expiresIn: "20m",
         });
@@ -40,8 +40,8 @@ userRefresh.post("/user/refresh", async (req, res) => {
         privatekey = refreshTokenVer.refreshTokens;
         let redisData = {
           email: email,
-          access: accesskey,
-          private: privatekey,
+          accessTokens: accesskey,
+          refreshTokens: privatekey,
         };
         redisData = await riderRepositiory.save(email, redisData);
         res.json(response);
@@ -54,7 +54,7 @@ userRefresh.post("/user/refresh", async (req, res) => {
     }
   } catch (error) {
     riderRepositiory.remove(email);
-    res.status(402).send(error.message);
+    res.status(401).send(error.message);
   }
 });
 export default userRefresh;
