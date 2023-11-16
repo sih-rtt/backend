@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { conductorRepositiory } from "../../User.js";
+import { conductorRepo } from "../../../redis/index.js";
 import "dotenv/config.js";
 
 var conductorAccess = express.Router();
@@ -13,7 +13,7 @@ conductorAccess.post("/conductor/access", async (req, res) => {
       process.env.ACCESS_SECRET
     ).conductorId;
     if (conductorId == conductorIdVer) {
-      const accessTokenVer = await conductorRepositiory.fetch(conductorId);
+      const accessTokenVer = await conductorRepo.fetch(conductorId);
       if (accessToken == accessTokenVer.access) {
         res.send(JSON.stringify("Authorized"));
       } else {

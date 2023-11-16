@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { riderRepositiory } from "../../User.js";
+import { riderRepo } from "../../../redis/index.js";
 import "dotenv/config";
 
 var userAccess = express.Router();
@@ -19,7 +19,7 @@ userAccess.post("/user/access", async (req, res) => {
   try {
     const emailVer = await jwt.verify(accessToken, process.env.ACCESS_SECRET).email;
     if (email == emailVer) {
-      const accessTokenVer = await riderRepositiory.fetch(email);
+      const accessTokenVer = await riderRepo.fetch(email);
       if (incudedInObj(accessTokenVer.accessTokens, accessToken)) {
         res.send(JSON.stringify("Authorized"));
       } else {
