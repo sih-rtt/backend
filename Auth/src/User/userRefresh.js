@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { riderRepositiory } from "../../User.js";
+import { riderRepo } from "../../../redis/index.js";
 var userRefresh = express.Router();
 import "dotenv/config";
 userRefresh.post("/user/refresh", async (req, res) => {
@@ -18,7 +18,7 @@ userRefresh.post("/user/refresh", async (req, res) => {
     const emailVer = await jwt.verify(refreshToken, process.env.REFRESH_SECRET)
       .email;
     if (email == emailVer) {
-      const refreshTokenVer = await riderRepositiory.fetch(email);
+      const refreshTokenVer = await riderRepo.fetch(email);
       let condition = incudedInObj(refreshTokenVer.refreshTokens, refreshToken);
       if (condition) {
         condition = condition - 1;
@@ -43,17 +43,17 @@ userRefresh.post("/user/refresh", async (req, res) => {
           accessTokens: accesskey,
           refreshTokens: privatekey,
         };
-        redisData = await riderRepositiory.save(email, redisData);
+        redisData = await riderRepo.save(email, redisData);
         res.json(response);
       } else {
-        riderRepositiory.remove(email);
+        riderRepo.remove(email);
         res.status(400).send("Unauthorized");
       }
     } else {
       res.status(400).send("Details don't match");
     }
   } catch (error) {
-    riderRepositiory.remove(email);
+    riderRepo.remove(email);
     res.status(401).send(error.message);
   }
 });

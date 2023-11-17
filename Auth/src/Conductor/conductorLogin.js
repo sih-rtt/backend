@@ -1,6 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import { conductorRepositiory } from "../../User.js";
+import { conductorRepo } from "../../../redis/index.js";
 import prisma from "../index.js";
 
 var conductorLogin = express.Router();
@@ -14,7 +14,7 @@ conductorLogin.post("/conductor/login", async (req, res) => {
   });
   if (conductor != null) {
     if (conductor.password == password) {
-      const data = await conductorRepositiory.fetch(conductorId);
+      const data = await conductorRepo.fetch(conductorId);
       if (data) {
         if (data.loggedIn == true) {
           res
@@ -41,7 +41,7 @@ conductorLogin.post("/conductor/login", async (req, res) => {
             access: accesskey,
             refresh: refreshKey,
           };
-          redisData = await conductorRepositiory.save(conductorId, redisData);
+          redisData = await conductorRepo.save(conductorId, redisData);
           res.json(response);
         }
       }

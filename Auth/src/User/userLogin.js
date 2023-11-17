@@ -2,7 +2,7 @@ import express from "express";
 import prisma from "../index.js";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { riderRepositiory } from "../../User.js";
+import { riderRepo } from "../../../redis/index.js";
 
 var userLogin = express.Router();
 userLogin.post("/user/login", async (req, res) => {
@@ -25,7 +25,7 @@ userLogin.post("/user/login", async (req, res) => {
         access: accessKey,
         refresh: refreshKey,
       };
-      const data = await riderRepositiory.fetch(email);
+      const data = await riderRepo.fetch(email);
       if (!data.accessTokens) {
         accessKey = [accessKey];
         refreshKey = [refreshKey];
@@ -40,7 +40,7 @@ userLogin.post("/user/login", async (req, res) => {
         accessTokens: accessKey,
         refreshTokens: refreshKey,
       };
-      redisData = await riderRepositiory.save(email, redisData);
+      redisData = await riderRepo.save(email, redisData);
       res.json(response);
     } else {
       res.status(403).send("Email or password is wrong");

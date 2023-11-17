@@ -1,5 +1,5 @@
 import express from "express";
-import { conductorRepositiory } from "../../User.js";
+import { conductorRepo } from "../../../redis/index.js";
 
 var conductorLogout = express.Router();
 conductorLogout.post("/conductor/logout", async (req, res) => {
@@ -20,7 +20,7 @@ conductorLogout.post("/conductor/logout", async (req, res) => {
   })
     .then(async (response) => {
       if (response.status == 200) {
-        await conductorRepositiory.remove(conductorId);
+        await conductorRepo.remove(conductorId);
         res.send("Logged Out");
       } else {
         const refreshData = { conductorId };
@@ -33,7 +33,7 @@ conductorLogout.post("/conductor/logout", async (req, res) => {
           body: JSON.stringify(refreshData),
         }).then(async (response) => {
           if (response.status == 200) {
-            await conductorRepositiory.remove(conductorId);
+            await conductorRepo.remove(conductorId);
             res.send("Logged Out");
           } else {
             res.status(response.status).send(response);
